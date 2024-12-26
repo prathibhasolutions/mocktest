@@ -22,22 +22,47 @@
       margin: 20px auto;
       border-collapse: collapse;
       width: 80%;
+      background-color: #fff;
     }
     table th, table td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 12px;
+      text-align: center;
     }
     table th {
       background-color: #f2f2f2;
-      text-align: center;
+      font-weight: bold;
+    }
+    table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .no-data {
+      font-size: 18px;
+      color: #e74c3c;
+    }
+    .btn {
+      padding: 10px 20px;
+      margin-top: 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #2980b9;
     }
   </style>
 </head>
 <body>
   <div class="result-container">
     <h1>Exam Results</h1>
+
+    <!-- Display result details -->
     <div class="result-details" id="resultDetails"></div>
-    <table>
+
+    <!-- Display result table -->
+    <table id="resultsTable">
       <thead>
         <tr>
           <th>Question</th>
@@ -46,32 +71,50 @@
           <th>Result</th>
         </tr>
       </thead>
-      <tbody id="resultsTable"></tbody>
+      <tbody></tbody>
     </table>
+
+    <!-- Button to navigate back to the upload page -->
+    <button class="btn" onclick="window.location.href = 'upload.html';">Back to Upload Page</button>
   </div>
+
   <script>
+    // Fetching score and user answers from localStorage
     const scoreData = JSON.parse(localStorage.getItem("scoreData"));
     const userAnswers = JSON.parse(localStorage.getItem("userAnswers"));
 
-    const resultDetails = document.getElementById("resultDetails");
-    resultDetails.innerHTML = `
-      <p>Total Questions: ${scoreData.totalQuestions}</p>
-      <p>Correct Answers: ${scoreData.correctAnswers}</p>
-      <p>Incorrect Answers: ${scoreData.incorrectAnswers}</p>
-      <p>Percentage: ${scoreData.percentage}%</p>
-    `;
-
-    const resultsTable = document.getElementById("resultsTable");
-    userAnswers.forEach((answer) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${answer.Question}</td>
-        <td>${answer.YourAnswer}</td>
-        <td>${answer.CorrectAnswer}</td>
-        <td>${answer.Result}</td>
+    // Checking if data exists
+    if (!scoreData || !userAnswers) {
+      document.querySelector('.result-container').innerHTML = "<p class='no-data'>No exam data found. Please ensure the exam was completed and results are available.</p>";
+    } else {
+      // Display result summary
+      const resultDetails = document.getElementById("resultDetails");
+      resultDetails.innerHTML = `
+        <p>Total Questions: ${scoreData.totalQuestions}</p>
+        <p>Correct Answers: ${scoreData.correctAnswers}</p>
+        <p>Incorrect Answers: ${scoreData.incorrectAnswers}</p>
+        <p>Not Answered: ${scoreData.notAnswered}</p>
+        <p>Percentage: ${scoreData.percentage}%</p>
       `;
-      resultsTable.appendChild(row);
-    });
+
+      // Display each question result
+      const resultsTable = document.getElementById("resultsTable").getElementsByTagName("tbody")[0];
+      userAnswers.forEach((answer, index) => {
+        const row = document.createElement("tr");
+
+        // Determine the result for each question
+        const resultText = answer.Result === "Not Answered" ? "Not Answered" :
+                          (answer.Result === "Correct" ? "Correct" : "Incorrect");
+
+        row.innerHTML = `
+          <td>Question ${index + 1}</td>
+          <td>${answer.YourAnswer || "No answer provided"}</td>
+          <td>${answer.CorrectAnswer || "No correct answer provided"}</td>
+          <td>${resultText}</td>
+        `;
+        resultsTable.appendChild(row);
+      });
+    }
   </script>
 </body>
 </html>

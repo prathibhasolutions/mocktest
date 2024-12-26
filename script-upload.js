@@ -1,7 +1,6 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const generateBtn = document.getElementById("generateBtn");
-  const questionImagesInput = document.getElementById("questionImages");
 
   generateBtn.addEventListener("click", () => {
     const studentName = document.getElementById("studentName").value.trim();
@@ -23,59 +22,35 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const files = Array.from(questionImagesInput.files);
+    // Hardcoded list of images in your folder
+    const images = [
 
-    if (files.length === 0) {
-      alert("Please upload at least one question image.");
+    ];
+
+    if (images.length === 0) {
+      alert("No question images found.");
       return;
     }
 
-    const imagesData = files.map((file) => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve({ name: file.name, data: e.target.result });
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(imagesData).then((images) => {
-      localStorage.setItem("studentName", studentName);
-      localStorage.setItem("examName", examName);
-      localStorage.setItem("examTimer", examTimer);
-      localStorage.setItem("questionImages", JSON.stringify(images));
-      alert("Are you sure to start the mock test! ");
-      window.location.href = "mock-test.html";
-    });
-  });
-
-  document.getElementById("answersKeyFile").addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          let keyData;
-          if (file.name.endsWith(".json")) {
-            keyData = JSON.parse(e.target.result);
-          } else if (file.name.endsWith(".xlsx")) {
-            const workbook = XLSX.read(e.target.result, { type: "binary" });
-            keyData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-          }
-          localStorage.setItem("answersKey", JSON.stringify(keyData));
-          alert("Answers key uploaded successfully!");
-        } catch (err) {
-          alert("Invalid file format.");
-        }
+    // Prepare image data for localStorage
+    const imagesData = images.map((image) => {
+      return {
+        name: image,
+        data: image // The relative path to the image
       };
-      if (file.name.endsWith(".xlsx")) {
-        reader.readAsBinaryString(file);
-      } else {
-        reader.readAsText(file);
-      }
-    }
+    });
+
+    // Store all data in localStorage
+    localStorage.setItem("studentName", studentName);
+    localStorage.setItem("examName", examName);
+    localStorage.setItem("examTimer", examTimer);
+    localStorage.setItem("questionImages", JSON.stringify(imagesData));
+
+    alert("Are you sure to start the mock test!");
+    window.location.href = "mock-test.html";
   });
-  
 });
+
 
 
 
