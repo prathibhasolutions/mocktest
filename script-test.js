@@ -18,9 +18,7 @@ window.addEventListener("DOMContentLoaded", () => {
     "D", "A", "C", "B", "D", "A", "C", "B", "D", "E",
     "A", "B", "C", "D", "A", "C", "B", "D", "A", "C",
     "B", "A", "D", "C", "B", "A", "C", "B", "D", "A",
-    "B", "C", "D", "A", "C", "B", "D", "A", "C", "B",
-    "D", "A", "C", "B", "D", "A", "C", "B", "D", "E",
-    "A", "B", "C", "D", "A", "C", "B", "D", "A", "C"
+    "B", "C", "D", "A", "C",
   ];
   // Answer options for each question
 

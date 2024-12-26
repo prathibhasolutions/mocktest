@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Hardcoded list of images in your folder
     const images = [
-
+      "1.jpg"
     ];
 
     if (images.length === 0) {
