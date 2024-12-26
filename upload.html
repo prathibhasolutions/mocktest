@@ -1,0 +1,107 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock Test</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+</head>
+<body>
+  <section class="header" style="font-family: sans-serif;color: rgb(99, 99, 99);">
+    <nav>
+        <img src="logo.png" alt="" class="logo">
+        <label for="questionImages">Upload Question Images:</label>
+        <input type="file" id="questionImages" multiple accept="image/*"><br><br><br><br> 
+
+        <div id="answersKeyUpload">
+          <label for="answersKeyFile">Upload Answers Key (JSON/Excel):</label>
+          <input type="file" id="answersKeyFile" accept=".json,.xlsx">
+        </div>
+        
+        
+    </nav>
+    
+  </section>
+  
+  <br><br><br><br><br><br><br><br><br>
+  <main>
+    <div id="detailsForm">
+      <label for="examTimer">Set Timer :     </label>
+      <input type="number" id="examTimer" placeholder="Enter duration in minutes" required><br><br><br><br>
+      <label for="examName">Exam Name:</label>
+      <input type="text" id="examName" placeholder="Enter the exam name" required><br><br><br><br>
+      <label for="studentName">Student Name:</label>
+      <input type="text" id="studentName" placeholder="Enter your name" required>
+      
+    </div>
+    <div id="uploadSection">
+      <br><br>
+      <button id="generateBtn">Start Mock Test</button>
+    </div>
+  </main>
+  <div id="popup">
+    <div id="popupContent">
+      <p id="popupMessage"></p>
+      <div id="popupButtons"></div>
+    </div>
+  </div>
+  
+  <script src="script-upload.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+  document.getElementById("answersKeyFile").addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          let keyData;
+          if (file.name.endsWith(".json")) {
+            keyData = JSON.parse(e.target.result);
+            localStorage.setItem("answersKey", JSON.stringify(keyData));
+            alert("Answers key uploaded successfully!");
+          } else if (file.name.endsWith(".xlsx")) {
+            const workbook = XLSX.read(e.target.result, { type: "binary" });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            keyData = XLSX.utils.sheet_to_json(worksheet);
+
+            // Validate if the required "Question" and "Answer" columns are present
+            if (keyData.length > 0 && keyData[0].Question && keyData[0].Answer) {
+              localStorage.setItem("answersKey", JSON.stringify(keyData));
+              alert("Answers key uploaded successfully!");
+            } else {
+              alert("Invalid Excel format. Ensure columns 'Question' and 'Answer' are present.");
+            }
+          } else {
+            alert("Unsupported file type. Upload a JSON or Excel (.xlsx) file.");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Error processing the file. Ensure it is in the correct format.");
+        }
+      };
+
+      if (file.name.endsWith(".xlsx")) {
+        reader.readAsBinaryString(file);
+      } else {
+        reader.readAsText(file);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
+
+

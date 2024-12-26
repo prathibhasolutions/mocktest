@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Results</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    .result-container {
+      text-align: center;
+      margin-top: 50px;
+    }
+    .result-details {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 80%;
+    }
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    table th {
+      background-color: #f2f2f2;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="result-container">
+    <h1>Exam Results</h1>
+    <div class="result-details" id="resultDetails"></div>
+    <table>
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Your Answer</th>
+          <th>Correct Answer</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody id="resultsTable"></tbody>
+    </table>
+  </div>
+  <script>
+    const scoreData = JSON.parse(localStorage.getItem("scoreData"));
+    const userAnswers = JSON.parse(localStorage.getItem("userAnswers"));
+
+    const resultDetails = document.getElementById("resultDetails");
+    resultDetails.innerHTML = `
+      <p>Total Questions: ${scoreData.totalQuestions}</p>
+      <p>Correct Answers: ${scoreData.correctAnswers}</p>
+      <p>Incorrect Answers: ${scoreData.incorrectAnswers}</p>
+      <p>Percentage: ${scoreData.percentage}%</p>
+    `;
+
+    const resultsTable = document.getElementById("resultsTable");
+    userAnswers.forEach((answer) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${answer.Question}</td>
+        <td>${answer.YourAnswer}</td>
+        <td>${answer.CorrectAnswer}</td>
+        <td>${answer.Result}</td>
+      `;
+      resultsTable.appendChild(row);
+    });
+  </script>
+</body>
+</html>
