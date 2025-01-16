@@ -305,14 +305,15 @@ window.addEventListener("DOMContentLoaded", () => {
     // Send data to Google Sheets
     fetch("https://script.google.com/macros/s/AKfycbx7htDAcyq7RC_AqsSP14tN4AXML2BGKE_l3LXduN2qD4VhTwXa4YtegW4BIv43AybU/exec", {
       method: "POST",
-      mode: "no-cors",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(scoreData)
-    }).then(() => {
-      console.log("Data sent to Google Sheets!");
-    }).catch(error => console.error("Error:", error));
+    })
+      .then(response => response.json())
+      .then(data => console.log("Response:", data))
+      .catch(error => console.error("Error:", error));
+
 
     // Redirect to results page
     window.location.href = "results.html";
