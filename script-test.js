@@ -308,11 +308,12 @@ window.addEventListener("DOMContentLoaded", () => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(scoreData)
+      body: JSON.stringify({ message: "Test Data" })
     })
-      .then(response => response.json())
-      .then(data => console.log("Response:", data))
+      .then(response => response.text())
+      .then(data => console.log("Test Response:", data))
       .catch(error => console.error("Error:", error));
+
 
 
     // Redirect to results page
