@@ -303,7 +303,7 @@ window.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("userAnswers", JSON.stringify(answers));
 
     // Send data to Google Sheets
-    fetch("https://script.google.com/macros/s/AKfycbx7htDAcyq7RC_AqsSP14tN4AXML2BGKE_l3LXduN2qD4VhTwXa4YtegW4BIv43AybU/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbzA3HZr68ntj5ZeICfYYlnlNNK7pmazMtdrdNBl5JL-lPjfqAwOckZIGnOg50ls9jzr/exec", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
