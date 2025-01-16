@@ -1,6 +1,8 @@
 window.addEventListener("DOMContentLoaded", () => {
   const studentName = localStorage.getItem("studentName");
   const examName = localStorage.getItem("examName");
+  const examfolder = localStorage.getItem("examfolder");
+  const correctAnswers = JSON.parse(localStorage.getItem("correctAnswers"));
   const examTimer = parseInt(localStorage.getItem("examTimer"), 10);
   const questionsContainer = document.getElementById("questionsContainer");
   const questionnoContainer = document.getElementById("questionnoContainer");
@@ -8,19 +10,6 @@ window.addEventListener("DOMContentLoaded", () => {
   let visitedindex = [];
 
   const userAnswers = {}; // To store user's selected answers
-
-  // Example hardcoded answers (you can replace this with actual answer keys)
-  const correctAnswers = [
-    "A", "C", "B", "D", "A", "B", "C", "D", "A", "C",
-    "B", "A", "D", "C", "B", "E", "A", "C", "D", "B",
-    "A", "C", "D", "B", "E", "A", "C", "B", "D", "A",
-    "C", "B", "A", "D", "C", "B", "E", "A", "C", "B",
-    "D", "A", "C", "B", "D", "A", "C", "B", "D", "E",
-    "A", "B", "C", "D", "A", "C", "B", "D", "A", "C",
-    "B", "A", "D", "C", "B", "A", "C", "B", "D", "A",
-    "B", "C", "D", "A", "C",
-  ];
-  // Answer options for each question
 
   // Utility function to show pop-up messages
   function showPopup(message, onConfirm = null, onCancel = null) {
@@ -57,20 +46,22 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  if (!studentName || !examName || !examTimer) {
+  if (!studentName || !examName) {
     showPopup("Missing student or exam details. Please start from the upload page.", () => {
       window.location.href = "upload.html";
     });
     return;
   }
 
-  document.getElementById("studentNameDisplay").textContent = `Name: ${studentName}`;
-  document.getElementById("examNameDisplay").textContent = `${examName}`;
+  document.getElementById("studentNameDisplay").textContent = `Candidate Name: ${studentName}`;
+  document.getElementById("examNameDisplay").textContent = `Exam Name: ${examName} `;
 
   // Assuming the images are located in a folder called "images"
+
+
   const storedImages = [];
   for (let i = 1; i <= correctAnswers.length; i++) {
-    storedImages.push({ data: `images/${i}.jpg` });
+    storedImages.push({ data: `${examfolder}/${i}.jpg` });
   }
 
   if (!storedImages || storedImages.length === 0) {
@@ -123,6 +114,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const optionsDiv = document.createElement("div");
     optionsDiv.classList.add("options");
 
+    const numericalDiv = document.createElement("div");
+    numericalDiv.classList.add("numerical");
+
     ["A", "B", "C", "D"].forEach((option) => {
       const label = document.createElement("label");
       label.classList.add("option");
@@ -167,11 +161,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
     textBoxLabel.textContent = "E: ";
     textBoxLabel.appendChild(textBox);
-    optionsDiv.appendChild(textBoxLabel);
+    numericalDiv.appendChild(textBoxLabel);
 
     questionDiv.appendChild(questionNumber);
     questionDiv.appendChild(questionImage);
     questionDiv.appendChild(optionsDiv);
+    // questionDiv.appendChild(numericalDiv);
+
 
     // Navigation Buttons (Back, Next)
     const navButtonsDiv = document.createElement("div");
@@ -245,91 +241,83 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }, 1000);
 
-  document.getElementById("submitBtn").addEventListener("click", () => {
-    showPopup(
-      "Are you sure you want to submit the test? Once submitted, you cannot make changes.",
-      () => submitAnswers(false), // On Confirm
-      () => { } // On Cancel, do nothing and return to the exam
-    );
-  });
+  const submitButton = document.getElementById("submitBtn");
+  if (submitButton) {
+    submitButton.addEventListener("click", () => {
+      showPopup(
+        "Are you sure you want to submit the test? Once submitted, you cannot make changes.",
+        () => submitAnswers(false), // Confirm submission
+        () => { } // Cancel, do nothing
+      );
+    });
+  }
+
 
   function submitAnswers(autoSubmit) {
+    console.log("Submitting answers...");
     const answers = [];
+    const attemptedAnswers = [];
+    const correctAnswersList = [];
     let correctAnswersCount = 0;
     let notAnsweredCount = 0;
 
     storedImages.forEach((_, index) => {
-      const selectedOption = userAnswers[index];
+      const selectedOption = userAnswers[index] || "No answer provided";
       const correctAnswer = correctAnswers[index] || "No correct answer provided";
 
-      const normalizedSelectedOption = String(selectedOption).trim();
-      const normalizedCorrectAnswer = String(correctAnswer).trim();
-
-      const isAnswered = normalizedSelectedOption !== "" && normalizedSelectedOption !== "No answer provided";
-
-      let result, userAnswer = selectedOption || "No answer provided";
-
-      if (isAnswered) {
-        // If answered, compare the answers
-        const isCorrect = normalizedSelectedOption === normalizedCorrectAnswer;
-        result = isCorrect ? "Correct" : "Incorrect";
-        if (isCorrect) {
-          correctAnswersCount++;
-        } else {
-          result = "Incorrect";
-        }
-      } else {
-        // If not answered
+      let result = selectedOption === correctAnswer ? "Correct" : "Incorrect";
+      if (selectedOption === "No answer provided") {
         result = "Not Answered";
-        userAnswer = "No answer provided";
         notAnsweredCount++;
+      } else if (result === "Correct") {
+        correctAnswersCount++;
       }
+
+      // Store answers for Google Sheets
+      attemptedAnswers.push(selectedOption);  // Collect attempted answers
+      correctAnswersList.push(correctAnswer); // Collect correct answers
 
       answers.push({
         Question: `Question ${index + 1}`,
-        YourAnswer: userAnswer,
+        YourAnswer: selectedOption,
         CorrectAnswer: correctAnswer,
-        Result: result,
+        Result: result
       });
     });
 
-    const incorrectAnswersCount = storedImages.length - correctAnswersCount - notAnsweredCount; // Exclude unanswered questions
-
-
+    const incorrectAnswersCount = storedImages.length - correctAnswersCount - notAnsweredCount;
 
     const scoreData = {
+      studentName: localStorage.getItem("studentName"),
+      examName: localStorage.getItem("examName"),
       totalQuestions: storedImages.length,
       correctAnswers: correctAnswersCount,
       incorrectAnswers: incorrectAnswersCount,
       notAnswered: notAnsweredCount,
       percentage: ((correctAnswersCount / storedImages.length) * 100).toFixed(2),
+      attemptedAnswers: attemptedAnswers,    // Send attempted answers
+      correctAnswersList: correctAnswersList // Send correct answers
     };
 
     localStorage.setItem("scoreData", JSON.stringify(scoreData));
     localStorage.setItem("userAnswers", JSON.stringify(answers));
 
-    // Export results to Excel
-    exportResultsToExcel(answers, scoreData);
+    // Send data to Google Sheets
+    fetch("https://script.google.com/macros/s/AKfycbx7htDAcyq7RC_AqsSP14tN4AXML2BGKE_l3LXduN2qD4VhTwXa4YtegW4BIv43AybU/exec", {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(scoreData)
+    }).then(() => {
+      console.log("Data sent to Google Sheets!");
+    }).catch(error => console.error("Error:", error));
 
+    // Redirect to results page
     window.location.href = "results.html";
   }
 
-  function exportResultsToExcel(answers, scoreData) {
-    const studentName = localStorage.getItem("studentName");
-    const examName = localStorage.getItem("examName");
-
-    const workbook = XLSX.utils.book_new();
-
-    const answersSheet = XLSX.utils.json_to_sheet(answers);
-    XLSX.utils.book_append_sheet(workbook, answersSheet, "Answers");
-
-    const scoreSheet = XLSX.utils.json_to_sheet([scoreData]);
-    XLSX.utils.book_append_sheet(workbook, scoreSheet, "Score Summary");
-
-    const fileName = `${studentName}_${examName}_Results.xlsx`;
-
-    XLSX.writeFile(workbook, fileName);
-  }
 
   window.onbeforeunload = () => "Refreshing the page will lose all progress. Are you sure?";
 });
