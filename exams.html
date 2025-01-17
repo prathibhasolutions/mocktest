@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Selection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Select Your Exam</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100 mb-2" onclick="toggleSubcategories('eapcet')">EAPCET</button>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100 mb-2" onclick="toggleSubcategories('jee')">JEE Mains</button>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100 mb-2" onclick="toggleSubcategories('programming')">Programming</button>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100 mb-2" onclick="toggleSubcategories('aptitude')">Aptitude</button>
+            </div>
+        </div>
+        
+        <div id="eapcet" class="subcategories mt-3 d-none">
+            <div class="card p-3">
+                <button class="btn btn-secondary w-100 mb-2" onclick="toggleNested('eapcet_chapters')">Chapters</button>
+                <div id="eapcet_chapters" class="nested-subcategories d-none">
+                    <a href="eapcet_physics.html" class="btn btn-success mb-2">Physics</a>
+                    <a href="eapcet_chemistry.html" class="btn btn-success mb-2">Chemistry</a>
+                    <a href="eapcet_math.html" class="btn btn-success mb-2">Mathematics</a>
+                </div>
+                <button class="btn btn-secondary w-100 mb-2" onclick="toggleNested('eapcet_topics')">Topics</button>
+                <div id="eapcet_topics" class="nested-subcategories d-none">
+                    <a href="eapcet_topicwise.html" class="btn btn-success mb-2">Topic-wise</a>
+                    <a href="eapcet_mock_tests.html" class="btn btn-success mb-2">Mock Tests</a>
+                    <a href="eapcet_previous_papers.html" class="btn btn-success mb-2">Previous Papers</a>
+                </div>
+            </div>
+        </div>
+        
+        <div id="jee" class="subcategories mt-3 d-none">
+            <div class="card p-3">
+                <button class="btn btn-secondary w-100 mb-2" onclick="toggleNested('jee_chapters')">Chapters</button>
+                <div id="jee_chapters" class="nested-subcategories d-none">
+                    <a href="jee_physics.html" class="btn btn-success mb-2">Physics</a>
+                    <a href="jee_chemistry.html" class="btn btn-success mb-2">Chemistry</a>
+                    <a href="jee_math.html" class="btn btn-success mb-2">Mathematics</a>
+                </div>
+                <button class="btn btn-secondary w-100 mb-2" onclick="toggleNested('jee_topics')">Topics</button>
+                <div id="jee_topics" class="nested-subcategories d-none">
+                    <a href="jee_topicwise.html" class="btn btn-success mb-2">Topic-wise</a>
+                    <a href="jee_mock_tests.html" class="btn btn-success mb-2">Mock Tests</a>
+                    <a href="jee_previous_papers.html" class="btn btn-success mb-2">Previous Papers</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleSubcategories(id) {
+            document.querySelectorAll('.subcategories').forEach(div => {
+                div.classList.add('d-none');
+            });
+            document.getElementById(id).classList.toggle('d-none');
+        }
+        
+        function toggleNested(id) {
+            document.getElementById(id).classList.toggle('d-none');
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
